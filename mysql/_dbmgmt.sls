@@ -4,6 +4,9 @@
 {% set comp_type = datamap['type'] %}
 {% set comp_data = datamap[comp_type]|default({}) %}
 
+{% set mysql_dbmgmt = comp_data.dbmgmt|default( {} ) %}
+{% set mysql_dbmgmt_require = mysql_dbmgmt.require|default( [ { "sls" : "mysql.server" } ] ) %}
+
 # SLS includes/ excludes
 include:
   - mysql._salt
@@ -13,8 +16,7 @@ include:
   cmd.run:
     - name: mysqladmin --user root password '{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}'
     - unless: mysql --user root --password='{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}' --execute="SELECT 1;"
-    - require:
-      - sls: mysql.server
+    - require: {{mysql_dbmgmt_require}}
 {% endif %}
 
 {% for id, d in comp_data.databases|default({})|dictsort %}
@@ -38,8 +40,7 @@ include:
   {% elif 'default_file' in datamap.salt.config.states %}
     - connection_default_file: {{ datamap.salt.config.states.default_file }}
   {% endif %}
-    - require:
-      - sls: mysql.server
+    - require: {{mysql_dbmgmt_require}}
 {% endfor %}
 
 
@@ -72,8 +73,7 @@ mysql_user_{{ u.name }}_{{ u.host|default('localhost') }}:
     - require:
       - pkg: {{ comp_type }}_server
   {% else  %}
-    - require:
-      - sls: mysql.server
+    - require: {{mysql_dbmgmt_require}}
   {% endif %}
 
 
@@ -120,6 +120,5 @@ mysql_grant_{{ g.user }}_{{ g.host|default('localhost') }}_{{ g.database|default
   {% elif 'default_file' in datamap.salt.config.states %}
     - connection_default_file: {{ datamap.salt.config.states.default_file }}
   {% endif %}
-    - require:
-      - sls: mysql.server
+    - require: {{mysql_dbmgmt_require}}
 {% endfor %}
