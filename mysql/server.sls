@@ -4,6 +4,9 @@
 {% set comp_type = datamap['type'] %}
 {% set comp_data = datamap[comp_type]|default({}) %}
 
+{% set mysql_service = comp_data.server.service|default( {} ) %}
+{% set mysql_service_ensure = mysql_service.ensure|default('running') %}
+
 # SLS includes/ excludes
 include: {{ comp_data.server.sls_include|default(['mysql._dbmgmt']) }}
 extend: {{ comp_data.server.sls_extend|default({}) }}
@@ -27,9 +30,11 @@ extend: {{ comp_data.server.sls_extend|default({}) }}
     - installed
     - pkgs: {{ comp_data.server.pkgs }}
   service:
-    - {{ comp_data.server.service.ensure|default('running') }}
+    - {{ mysql_service_ensure|default('running') }}
     - name: {{ comp_data.server.service.name }}
+    {% if mysql_service_ensure != "disabled" %}
     - enable: {{ comp_data.server.service.enable|default(True) }}
+    {% endif %}
     - require:
       - pkg: {{ comp_type }}_server
   cmd:
@@ -53,6 +58,8 @@ extend: {{ comp_data.server.sls_extend|default({}) }}
     - group: {{ f.group|default('root') }}
     - context:
       config: {{ f.config|default({})|json }}
+    {% if mysql_service_ensure != "disabled" %}
     - watch_in:
       - service: {{ comp_type }}_server
+    {% endif %}
 {% endfor %}
