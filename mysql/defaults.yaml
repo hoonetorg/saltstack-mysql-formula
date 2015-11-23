@@ -144,4 +144,4 @@ os_family:
           - Percona-XtraDB-Cluster-56
           - MySQL-python
         service:
-          name: mariadb
+          name: mysql
