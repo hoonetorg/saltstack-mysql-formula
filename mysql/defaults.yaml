@@ -23,6 +23,12 @@ kernel:
           manage:
             - my
           my: {}
+    pxc:
+      server:
+        config:
+          manage:
+            - my
+          my: {}
 os_family:
   Amazon:
     mysql:
@@ -63,6 +69,16 @@ os_family:
       server:
         pkgs:
           - mysql-server
+          - python-mysqldb
+        service:
+          name: mysql
+    pxc:
+      client:
+        pkgs:
+          - percona-server-client-56
+      server:
+        pkgs:
+          - percona-xtradb-cluster-56
           - python-mysqldb
         service:
           name: mysql
@@ -119,3 +135,13 @@ os_family:
           - MySQL-python
         service:
           name: mysqld
+    pxc:
+      client:
+        pkgs:
+          - Percona-Server-client-56
+      server:
+        pkgs:
+          - Percona-XtraDB-Cluster-56
+          - MySQL-python
+        service:
+          name: mariadb
