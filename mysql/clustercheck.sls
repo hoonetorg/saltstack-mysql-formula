@@ -1,6 +1,5 @@
 #!jinja|yaml
 
-{% if grains['init'] in [ 'systemd' ] %}
 
 {% set datamap = salt['formhelper.get_defaults']('mysql', saltenv) %}
 {% set comp_type = datamap['type'] %}
@@ -8,9 +7,30 @@
 
 #initialize a few dict's that are empty if no pillar or default setting overrides it
 {% set clustercheck = comp_data['clustercheck']|default({}) %}
+{% set user = clustercheck['user']|default({}) %}
+{% set defaultsfile = clustercheck['defaultsfile']|default({}) %}
 {% set service = clustercheck['service']|default({}) %}
 {% set socket = clustercheck['socket']|default({}) %}
 {% set rsyslog = clustercheck['rsyslog']|default({}) %}
+
+{{ comp_type }}_clustercheck_defaults_file:
+  file:
+    - managed
+    - name: {{ defaultsfile.path|default('/etc/sysconfig/clustercheck') }}
+    - mode: {{ defaultsfile.mode|default(640) }}
+    - user: {{ defaultsfile.user|default('root') }}
+    - group: {{ defaultsfile.group|default('nobody') }}
+    - contents: |
+        MYSQL_USERNAME="{{ user.name|default('clustercheckuser') }}"
+        MYSQL_PASSWORD="{{ user.password|default('clustercheckpassword')}}"
+        MYSQL_HOST="{{ user.host|default('localhost') }}"
+        MYSQL_PORT="{{ user.port|default('3306') }}"
+        ERR_FILE="{{ user.errfile|default('/dev/null') }}"
+        AVAILABLE_WHEN_DONOR={{ user.av_when_donor|default('0') }}
+        AVAILABLE_WHEN_READONLY={{ user.av_when_readonly|default('1') }}
+        DEFAULTS_EXTRA_FILE="{{ user.defaults_extra_file|default('/etc/my.cnf') }}"
+
+{% if grains['init'] in [ 'systemd' ] %}
 
 {% if socket.path is defined and socket.path != '' %}
    {% do socket.update( {'servicename': socket['path'].split('/')|last} ) %}
@@ -30,7 +50,7 @@
          
         [Service]
         User=nobody
-        ExecStart=-/usr/bin/clustercheck {{clustercheck.dbuser|default('')}} {{clustercheck.dbpassword|default('')}}
+        ExecStart=-/usr/bin/clustercheck {{ user.name|default('clustercheckuser') }} {{ user.password|default('clustercheckpassword')}}
         StandardInput=socket
 
 {{ comp_type }}_clustercheck_systemd_socketfile:

@@ -63,3 +63,13 @@ extend: {{ comp_data.server.sls_extend|default({}) }}
       - service: {{ comp_type }}_server
     {% endif %}
 {% endfor %}
+
+# preparation done by galera agent option  'enable_creation=true'
+{# if salt['grains.get']('os_family') in ['RedHat'] %}
+{{ comp_type }}_init_create_db_files:
+  cmd.run:
+    - name: /usr/libexec/mariadb-prepare-db-dir {{ comp_data.server.service.name }}
+    - user: root
+    - group: root
+    - unless: test -d /var/lib/mysql/mysql
+{% endif #}

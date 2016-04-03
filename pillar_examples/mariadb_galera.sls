@@ -29,6 +29,23 @@ mysql:
           pass: yoursecurepassword42
           socket: /var/run/mysqld/mysqld.sock
     mariadb_galera:
+      clustercheck:
+        user:
+          name: clustercheckuser
+          password: hoonetorg
+          host: localhost
+          #if you know what you're doing
+          #ensure: present
+          #passwordless: False
+          #database: "'*.*'"
+          #grant: 
+          # - usage
+          #escape: True
+          #port: 3306
+          #errfile: /var/log/clustercheck.err
+          #av_when_donor: 0
+          #av_when_readonly: 1
+          #defaults_extra_file: /etc/my.cnf
       server:
         rootpwd: 'yoursecurepassword42'
         config:
