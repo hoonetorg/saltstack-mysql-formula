@@ -24,7 +24,7 @@ mysql_pcs__resource_created_{{pcs_data.resource_name}}:
   pcs.resource_created:
     - resource_id: {{pcs_data.resource_name}}
     - resource_type: "{{pcs_data.resource_type|default('ocf:heartbeat:galera')}}"
-      resource_options:
+    - resource_options:
         - 'wsrep_cluster_address={{pcs_data.wsrep_cluster_address}}'
         - 'enable_creation=true'
         - '--master'
