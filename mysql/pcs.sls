@@ -14,10 +14,10 @@
 include:
   - mysql._salt
 
-{% if pcs_data.galera_extra_cib is defined and pcs_data.galera_extra_cib %}
-mysql_pcs__cib_created_{{pcs_data.galera_extra_cib}}:
+{% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
+mysql_pcs__cib_created_{{pcs_data.galera_cib}}:
   pcs.cib_created:
-    - cibname: {{pcs_data.galera_extra_cib}}
+    - cibname: {{pcs_data.galera_cib}}
 {% endif %}
 
 mysql_pcs__resource_created_{{pcs_data.resource_name}}:
@@ -31,16 +31,16 @@ mysql_pcs__resource_created_{{pcs_data.resource_name}}:
         - 'meta'
         - 'master-max={{pcs_data.master_max}}'
 
-{% if pcs_data.galera_extra_cib is defined and pcs_data.galera_extra_cib %}
-    - cibname: {{pcs_data.galera_extra_cib}}
+{% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
+    - cibname: {{pcs_data.galera_cib}}
     - require:
-      - pcs: mysql_pcs__cib_created_{{pcs_data.galera_extra_cib}}
+      - pcs: mysql_pcs__cib_created_{{pcs_data.galera_cib}}
 {% endif %}
 
-{% if pcs_data.galera_extra_cib is defined and pcs_data.galera_extra_cib %}
-mysql_pcs__cib_pushed_{{pcs_data.galera_extra_cib}}:
+{% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
+mysql_pcs__cib_pushed_{{pcs_data.galera_cib}}:
   pcs.cib_pushed:
-    - cibname: {{pcs_data.galera_extra_cib}}
+    - cibname: {{pcs_data.galera_cib}}
     - require:
       - pcs: mysql_pcs__resource_created_{{pcs_data.resource_name}}
 {% endif %}
@@ -58,8 +58,8 @@ mysql_pcs__set_root_access:
         pcs resource cleanup {{pcs_data.resource_name}};
     - timeout: 300
     - watch:
-{% if pcs_data.galera_extra_cib is defined and pcs_data.galera_extra_cib %}
-      - pcs: mysql_pcs__cib_pushed_{{pcs_data.galera_extra_cib}}
+{% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
+      - pcs: mysql_pcs__cib_pushed_{{pcs_data.galera_cib}}
 {% else %}
       - pcs: mysql_pcs__resource_created_{{pcs_data.resource_name}}
 {% endif %}
