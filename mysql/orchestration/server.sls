@@ -19,13 +19,22 @@ mysql_orchestration_server__node_ids_server:
     - expect_minions: True
     - sls: mysql.server
 
+mysql_orchestration_server__node_ids_selinux:
+  salt.state:
+    - tgt: {{node_ids|json}}
+    - tgt_type: list
+    - expect_minions: True
+    - sls: mysql.selinux
+    - require:
+      - salt: mysql_orchestration_server__node_ids_server
+
 mysql_orchestration_server__pcs:
   salt.state:
     - tgt: {{admin_node_id}}
     - expect_minions: True
     - sls: mysql.pcs
     - require:
-      - salt: mysql_orchestration_server__node_ids_server
+      - salt: mysql_orchestration_server__node_ids_selinux
 
 mysql_orchestration_server__dbmgmt:
   salt.state:
