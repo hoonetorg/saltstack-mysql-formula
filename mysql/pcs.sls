@@ -15,13 +15,13 @@ include:
   - mysql._salt
 
 {% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
-mysql_pcs__cib_created_{{pcs_data.galera_cib}}:
-  pcs.cib_created:
+mysql_pcs__cib_present_{{pcs_data.galera_cib}}:
+  pcs.cib_present:
     - cibname: {{pcs_data.galera_cib}}
 {% endif %}
 
-mysql_pcs__resource_created_{{pcs_data.resource_name}}:
-  pcs.resource_created:
+mysql_pcs__resource_present_{{pcs_data.resource_name}}:
+  pcs.resource_present:
     - resource_id: {{pcs_data.resource_name}}
     - resource_type: "{{pcs_data.resource_type|default('ocf:heartbeat:galera')}}"
     - resource_options:
@@ -34,7 +34,7 @@ mysql_pcs__resource_created_{{pcs_data.resource_name}}:
 {% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
     - cibname: {{pcs_data.galera_cib}}
     - require:
-      - pcs: mysql_pcs__cib_created_{{pcs_data.galera_cib}}
+      - pcs: mysql_pcs__cib_present_{{pcs_data.galera_cib}}
 {% endif %}
 
 {% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
@@ -42,7 +42,7 @@ mysql_pcs__cib_pushed_{{pcs_data.galera_cib}}:
   pcs.cib_pushed:
     - cibname: {{pcs_data.galera_cib}}
     - require:
-      - pcs: mysql_pcs__resource_created_{{pcs_data.resource_name}}
+      - pcs: mysql_pcs__resource_present_{{pcs_data.resource_name}}
 {% endif %}
 
 {% if salt['grains.get']('os_family') in ['RedHat', 'Suse' ] %}
@@ -61,7 +61,7 @@ mysql_pcs__set_root_access:
 {% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
       - pcs: mysql_pcs__cib_pushed_{{pcs_data.galera_cib}}
 {% else %}
-      - pcs: mysql_pcs__resource_created_{{pcs_data.resource_name}}
+      - pcs: mysql_pcs__resource_present_{{pcs_data.resource_name}}
 {% endif %}
 
 mysql_pcs__set_wait_cluster_resource_online:
