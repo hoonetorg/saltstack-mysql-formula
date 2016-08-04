@@ -18,3 +18,9 @@
     - name: semodule -i /etc/{{comp_data.selinux_type}}.pp
     - unless: semodule -l |grep -q '{{comp_data.selinux_type}}'
 {% endif %}
+
+{{ comp_type }}_selinux_empty_sls_prevent_error:
+  cmd.run:
+    - name: true
+    - unless: true
+

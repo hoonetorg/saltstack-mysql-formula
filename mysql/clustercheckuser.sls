@@ -13,7 +13,7 @@
     - {{ user.ensure|default('present') }}
     - name: {{ user.name|default('clustercheckuser') }}
     - host: {{ user.host|default('localhost') }}
-    - password: {{ user.password|default('clustercheckpassword') }}
+    - password: {{ user.password|default('clustercheckpassword!') }}
     - allow_passwordless: {{ user.passwordless|default(False) }}
     - unix_socket: {{ user.unix_socket|default(True) }}
     {# Salt MySQL conn config #}
@@ -33,7 +33,7 @@
     - user: {{ user.name|default('clustercheckuser') }}
     - host: {{ user.host|default('localhost') }}
     - database: '{{ user.database|default('*.*') }}'
-    - grant: {{ user.grant|default(['usage'])|join(',') }}
+    - grant: {{ user.grant|default(['process'])|join(',') }}
     - grant_option: {{ user.grant_option|default(False) }}
     - escape: {{ user.escape|default(True) }}
     - revoke_first: {{ user.revoke|default(False) }}

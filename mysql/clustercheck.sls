@@ -22,7 +22,7 @@
     - group: {{ defaultsfile.group|default('nobody') }}
     - contents: |
         MYSQL_USERNAME="{{ user.name|default('clustercheckuser') }}"
-        MYSQL_PASSWORD="{{ user.password|default('clustercheckpassword')}}"
+        MYSQL_PASSWORD="{{ user.password|default('clustercheckpassword!')}}"
         MYSQL_HOST="{{ user.host|default('localhost') }}"
         MYSQL_PORT="{{ user.port|default('3306') }}"
         ERR_FILE="{{ user.errfile|default('/dev/null') }}"
@@ -50,7 +50,7 @@
          
         [Service]
         User=nobody
-        ExecStart=-/usr/bin/clustercheck {{ user.name|default('clustercheckuser') }} {{ user.password|default('clustercheckpassword')}}
+        ExecStart=-/usr/bin/clustercheck "{{ user.name|default('clustercheckuser') }}" "{{ user.password|default('clustercheckpassword!')}}"
         StandardInput=socket
 
 {{ comp_type }}_clustercheck_systemd_socketfile:

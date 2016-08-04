@@ -11,6 +11,31 @@
 include: {{ comp_data.server.sls_include|default(['mysql._dbmgmt']) }}
 extend: {{ comp_data.server.sls_extend|default({}) }}
 
+
+{% for config in comp_data.server.config.manage %}
+  {% set f = comp_data['server']['config'][config] %}
+
+{{ comp_type }}_config_{{ config }}:
+  file:
+    - managed
+    - name: {{ f.path|default('/etc/mysql/my.cnf') }}
+    - source: {{ f.template_path|default('salt://mysql/files/my.cnf') }}
+    - makedirs: {{ f.makedirs|default(True) }}
+    - template: {{ f.template_renderer|default('jinja') }}
+    - mode: {{ f.mode|default(640) }}
+    - user: {{ f.user|default('root') }}
+    - group: {{ f.group|default('root') }}
+    - context:
+      config: {{ f.config|default({})|json }}
+    - require_in:
+      - pkg: {{ comp_type }}_server
+    {% if mysql_service_ensure != "disabled" %}
+    - watch_in:
+      - service: {{ comp_type }}_server
+    {% endif %}
+{% endfor %}
+
+
 {% if salt['grains.get']('os_family') in ['Debian'] %}
 {{ comp_type }}_debconf:
   debconf:
@@ -43,26 +68,6 @@ extend: {{ comp_data.server.sls_extend|default({}) }}
     - watch:
       - service: {{ comp_type }}_server
 
-
-{% for config in comp_data.server.config.manage %}
-  {% set f = comp_data['server']['config'][config] %}
-
-{{ comp_type }}_config_{{ config }}:
-  file:
-    - managed
-    - name: {{ f.path|default('/etc/mysql/my.cnf') }}
-    - source: {{ f.template_path|default('salt://mysql/files/my.cnf') }}
-    - template: {{ f.template_renderer|default('jinja') }}
-    - mode: {{ f.mode|default(640) }}
-    - user: {{ f.user|default('root') }}
-    - group: {{ f.group|default('root') }}
-    - context:
-      config: {{ f.config|default({})|json }}
-    {% if mysql_service_ensure != "disabled" %}
-    - watch_in:
-      - service: {{ comp_type }}_server
-    {% endif %}
-{% endfor %}
 
 # preparation done by galera agent option  'enable_creation=true'
 {# if salt['grains.get']('os_family') in ['RedHat'] %}

@@ -5,11 +5,6 @@
 {% set comp_data = datamap[comp_type]|default({}) %}
 {% set pcs_data = datamap['pcs'] %}
 
-{% set resource_options = pcs_data['resource_options'] %}
-{% if salt['grains.get']('os_family') in ['Debian' ] %}
-{% set resource_options = resource_options + ['check_user=root', 'check_passwd=' + comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5')] %}
-{% endif %}
-
 # SLS includes/ excludes
 include:
   - mysql._salt
@@ -27,6 +22,7 @@ mysql_pcs__resource_present_{{pcs_data.resource_name}}:
     - resource_options:
         - 'wsrep_cluster_address={{pcs_data.wsrep_cluster_address}}'
         - 'enable_creation=true'
+        - 'socket=/var/lib/mysql/mysql.sock'
         - '--master'
         - 'meta'
         - 'master-max={{pcs_data.master_max}}'
@@ -45,7 +41,7 @@ mysql_pcs__cib_pushed_{{pcs_data.galera_cib}}:
       - pcs: mysql_pcs__resource_present_{{pcs_data.resource_name}}
 {% endif %}
 
-{% if salt['grains.get']('os_family') in ['RedHat', 'Suse' ] %}
+{% if salt['grains.get']('os_family') in ['RedHat', 'Suse', 'Debian' ] %}
 mysql_pcs__set_root_access:
   cmd.wait:
     - name: |
