@@ -24,7 +24,7 @@ mysql_pcs__resource_present_{{pcs_data.resource_name}}:
         - 'check_user=root'
         - 'wsrep_cluster_address={{pcs_data.wsrep_cluster_address}}'
         - 'enable_creation=true'
-        - 'socket={{pcs_data.socket}}'
+        - 'socket={{pcs_data.socket|default(datamap.mysql_socket)}}'
         - '--master'
         - 'meta'
         - 'master-max={{pcs_data.master_max}}'

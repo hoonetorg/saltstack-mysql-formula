@@ -36,7 +36,7 @@ include:
     - connection_user: {{ datamap.salt.config.states.user|default('root') }}
     - connection_pass: {{ datamap.salt.config.states.pass|default('enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}
     - connection_charset: {{ datamap.salt.config.states.charset|default('utf8') }}
-    - connection_unix_socket: {{ datamap.salt.config.states.socket|default('/var/run/mysqld/mysqld.sock') }}
+    - connection_unix_socket: {{ datamap.salt.config.states.socket|default(datamap.mysql_socket) }}
   {% elif 'default_file' in datamap.salt.config.states %}
     - connection_default_file: {{ datamap.salt.config.states.default_file }}
   {% endif %}
@@ -63,7 +63,7 @@ mysql_user_{{ u.name }}_{{ u.host|default('localhost') }}:
     - connection_user: {{ datamap.salt.config.states.user|default('root') }}
     - connection_pass: {{ datamap.salt.config.states.pass|default('enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}
     - connection_charset: {{ datamap.salt.config.states.charset|default('utf8') }}
-    - connection_unix_socket: {{ datamap.salt.config.states.socket|default('/var/run/mysqld/mysqld.sock') }}
+    - connection_unix_socket: {{ datamap.salt.config.states.socket|default(datamap.mysql_socket) }}
   {% elif 'default_file' in datamap.salt.config.states %}
     - connection_default_file: {{ datamap.salt.config.states.default_file }}
   {% endif %}
@@ -116,7 +116,7 @@ mysql_grant_{{ g.user }}_{{ g.host|default('localhost') }}_{{ g.database|default
     - connection_user: {{ datamap.salt.config.states.user|default('root') }}
     - connection_pass: {{ datamap.salt.config.states.pass|default('enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}
     - connection_charset: {{ datamap.salt.config.states.charset|default('utf8') }}
-    - connection_unix_socket: {{ datamap.salt.config.states.socket|default('/var/run/mysqld/mysqld.sock') }}
+    - connection_unix_socket: {{ datamap.salt.config.states.socket|default(datamap.mysql_socket) }}
   {% elif 'default_file' in datamap.salt.config.states %}
     - connection_default_file: {{ datamap.salt.config.states.default_file }}
   {% endif %}

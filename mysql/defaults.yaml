@@ -31,6 +31,7 @@ kernel:
           my: {}
 os_family:
   Amazon:
+    mysql_socket: /var/lib/mysql/mysql.sock
     mysql:
       client:
         pkgs:
@@ -42,8 +43,7 @@ os_family:
         service:
           name: mysqld
   Debian:
-    pcs:
-      socket: /var/run/mysqld/mysqld.sock
+    mysql_socket: /var/run/mysqld/mysqld.sock
     mariadb:
       client:
         pkgs:
@@ -85,6 +85,7 @@ os_family:
         service:
           name: mysql
   FreeBSD:
+    mysql_socket: /tmp/mysql.sock
     mysql:
       client:
         pkgs:
@@ -96,6 +97,7 @@ os_family:
         service:
           name: mysql
   Gentoo:
+    mysql_socket: /var/run/mysqld/mysqld.sock
     mysql:
       client:
         pkgs:
@@ -107,8 +109,7 @@ os_family:
         service:
           name: mysqld
   RedHat:
-    pcs:
-      socket: /var/lib/mysql/mysql.sock
+    mysql_socket: /var/lib/mysql/mysql.sock
     mariadb:
       client:
         pkgs:
