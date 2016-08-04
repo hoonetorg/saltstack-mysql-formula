@@ -42,6 +42,8 @@ os_family:
         service:
           name: mysqld
   Debian:
+    pcs:
+      socket: /var/run/mysqld/mysqld.sock
     mariadb:
       client:
         pkgs:
@@ -105,6 +107,8 @@ os_family:
         service:
           name: mysqld
   RedHat:
+    pcs:
+      socket: /var/lib/mysql/mysql.sock
     mariadb:
       client:
         pkgs:
