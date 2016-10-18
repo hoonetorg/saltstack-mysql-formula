@@ -25,9 +25,36 @@ mysql_pcs__resource_present_{{pcs_data.resource_name}}:
         - 'wsrep_cluster_address={{pcs_data.wsrep_cluster_address}}'
         - 'enable_creation=true'
         - 'socket={{pcs_data.socket|default(datamap.mysql_socket)}}'
-        - '--master'
+        #- '--open-files-limit={{pcs_data.open_files_limit|default("16384")}}' 
         - 'meta'
         - 'master-max={{pcs_data.master_max}}'
+        {% if pcs_data.get('ordered', False) %}
+        - 'ordered=true'
+        {% endif %}
+        - 'op'
+        - 'start'
+        - 'interval=0s'
+        - 'timeout={{pcs_data.op_start_timeout|default("120")}}'
+        - 'op'
+        - 'stop'
+        - 'interval=0s'
+        - 'timeout={{pcs_data.op_stop_timeout|default("120")}}'
+        - 'op'
+        - 'monitor'
+        - 'interval={{pcs_data.op_monitor_interval|default("20")}}'
+        - 'timeout={{pcs_data.op_monitor_timeout|default("30")}}'
+        - 'op'
+        - 'promote'
+        - 'interval=0s'
+        - 'timeout={{pcs_data.op_promote_timeout|default("300")}}'
+        - 'op'
+        - 'demote'
+        - 'interval=0s'
+        - 'timeout={{pcs_data.op_demote_timeout|default("120")}}'
+        {% if pcs_data.get('on_fail', False) %}
+        - 'on-fail={{pcs_data.on_fail|default("block")}}'
+        {% endif %}
+        - '--master'
 
 {% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
     - cibname: {{pcs_data.galera_cib}}
