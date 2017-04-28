@@ -24,8 +24,12 @@ mysql_pcs__resource_present_{{pcs_data.resource_name}}:
         - 'check_user=root'
         - 'wsrep_cluster_address={{pcs_data.wsrep_cluster_address}}'
         - 'enable_creation=true'
+        - 'datadir={{pcs_data.datadir|default(datamap.datadir)}}'
+        - 'pid={{pcs_data.pid|default(datamap.pid)}}'
+        - 'log={{pcs_data.log|default(datamap.log)}}'
         - 'socket={{pcs_data.socket|default(datamap.mysql_socket)}}'
-        #- '--open-files-limit={{pcs_data.open_files_limit|default("16384")}}' 
+        #- '--open-files-limit={{pcs_data.open_files_limit|default("16384")}}'
+        - '--master'
         - 'meta'
         - 'master-max={{pcs_data.master_max}}'
         {% if pcs_data.get('ordered', False) %}
@@ -54,7 +58,7 @@ mysql_pcs__resource_present_{{pcs_data.resource_name}}:
         {% if pcs_data.get('on_fail', False) %}
         - 'on-fail={{pcs_data.on_fail|default("block")}}'
         {% endif %}
-        - '--master'
+
 
 {% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
     - cibname: {{pcs_data.galera_cib}}
@@ -76,7 +80,7 @@ mysql_pcs__set_root_access:
     - name: |
         starttries=55
         tries=$starttries
-        pcs_clear_pass=` expr $starttries - 25 ` 
+        pcs_clear_pass=` expr $starttries - 10 ` 
         startupok=NOOK
         pcs resource cleanup {{pcs_data.resource_name}};
         while [ $tries -gt 1 ] ; do 
@@ -90,11 +94,11 @@ mysql_pcs__set_root_access:
             fi;
             sleep 5;
             if [ $tries -eq $pcs_clear_pass ] ; then 
-                pcs resource update {{pcs_data.resource_name}} check_user='root' check_passwd= &&
+                pcs resource update {{pcs_data.resource_name}} check_user='root' check_passwd= additional_parameters='--skip-grant-tables' &&
                 pcs resource cleanup {{pcs_data.resource_name}};
             fi
         done
-        pcs resource update {{pcs_data.resource_name}} check_user='root' check_passwd='{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}' &&
+        pcs resource update {{pcs_data.resource_name}} check_user='root' check_passwd='{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}' additional_parameters= &&
         pcs resource cleanup {{pcs_data.resource_name}};
         break
 
