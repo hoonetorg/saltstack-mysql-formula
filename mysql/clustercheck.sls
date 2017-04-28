@@ -40,7 +40,7 @@
   file:
     - managed
     - name: {{ service.path|default('/etc/systemd/system/clustercheck@.service') }}
-    - mode: {{ service.mode|default(640) }}
+    - mode: {{ service.mode|default(644) }}
     - user: {{ service.user|default('root') }}
     - group: {{ service.group|default('root') }}
     - contents: |
