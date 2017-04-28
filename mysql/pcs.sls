@@ -80,7 +80,7 @@ mysql_pcs__set_root_access:
     - name: |
         starttries=55
         tries=$starttries
-        pcs_clear_pass=` expr $starttries - 10 ` 
+        pcs_clear_pass=` expr $starttries - 5 ` 
         startupok=NOOK
         pcs resource cleanup {{pcs_data.resource_name}};
         while [ $tries -gt 1 ] ; do 
@@ -88,17 +88,23 @@ mysql_pcs__set_root_access:
             if  ! mysql --user root --password='{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}' --execute="SELECT 1;"; then
                mysqladmin --user root password '{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}'
                mysqladmin --user root --password='' password '{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}'
+               #mysql -u root -e "FLUSH PRIVILEGES;"
+               #mysql -u root --password='' -e "FLUSH PRIVILEGES;"
+               #mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}');"
+               #mysql -u root --password='' -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}');"
+               #mysql -u root -e "FLUSH PRIVILEGES;"
+               #mysql -u root --password='' -e "FLUSH PRIVILEGES;"
             else
                startupok=OK
                break
             fi;
             sleep 5;
             if [ $tries -eq $pcs_clear_pass ] ; then 
-                pcs resource update {{pcs_data.resource_name}} check_user='root' check_passwd= additional_parameters='--skip-grant-tables' &&
+                pcs resource update {{pcs_data.resource_name}} check_user='root' check_passwd= &&
                 pcs resource cleanup {{pcs_data.resource_name}};
             fi
         done
-        pcs resource update {{pcs_data.resource_name}} check_user='root' check_passwd='{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}' additional_parameters= &&
+        pcs resource update {{pcs_data.resource_name}} check_user='root' check_passwd='{{ comp_data.server.rootpwd|default('-enM1kEmC1S8D50ABKXdz5hlXQTAm2z5') }}' &&
         pcs resource cleanup {{pcs_data.resource_name}};
         break
 
