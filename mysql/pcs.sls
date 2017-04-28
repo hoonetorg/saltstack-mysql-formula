@@ -59,12 +59,29 @@ mysql_pcs__resource_present_{{pcs_data.resource_name}}:
         - 'on-fail={{pcs_data.on_fail|default("block")}}'
         {% endif %}
 
-
 {% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
     - cibname: {{pcs_data.galera_cib}}
     - require:
       - pcs: mysql_pcs__cib_present_{{pcs_data.galera_cib}}
 {% endif %}
+
+{% if 'constraints' in pcs_data %}
+{% for constraint, constraint_data in pcs_data.constraints.items()|sort %}
+mysql_pcs__constraint_present_{{constraint}}:
+  pcs.constraint_present:
+    - constraint_id: {{constraint}}
+    - constraint_type: "{{constraint_data.constraint_type}}"
+    - constraint_options: {{constraint_data.constraint_options|json}}
+{% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
+    - require:
+      - pcs: mysql_pcs__cib_present_{{pcs_data.galera_cib}}
+    - require_in:
+      - pcs: mysql_pcs__cib_pushed_{{pcs_data.galera_cib}}
+    - cibname: {{pcs_data.galera_cib}}
+{% endif %}
+{% endfor %}
+{% endif %}
+
 
 {% if pcs_data.galera_cib is defined and pcs_data.galera_cib %}
 mysql_pcs__cib_pushed_{{pcs_data.galera_cib}}:
